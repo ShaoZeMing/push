@@ -1,0 +1,21 @@
+{
+    "name": "shaozeming/push",
+    "description": "将集成个推、激光推送等推送服务...开发ing.....",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "shaozeming",
+            "email": "szm19920426@gmail.com",
+            "homepage": "http://blog.4d4k.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Shaozeming\\Push\\": "src/"
+        }
+    }
+}
