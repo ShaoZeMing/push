@@ -41,8 +41,8 @@ class PushMsgService
         }
         switch ($status) {
             case 'all'://发送push+msg
-                $pushType = config('getui.biz_type.push_' . $userTxt, 0);
-                $msgType = config('getui.biz_type.msg_' . $userTxt, 0);
+                $pushType = config('push.biz_type.push_' . $userTxt, 0);
+                $msgType = config('push.biz_type.msg_' . $userTxt, 0);
                 $apps = $model->apps()->where('is_logout', 0)->first(['device_id']);
                 if (!count($apps)) {
                     Log::error('推送失败，没有找到用户device_id', $context);
@@ -52,7 +52,7 @@ class PushMsgService
                 $this->insertMsg($userId, $orderId, $title, $content, $msgType, $class);
                 break;
             case 'push':// 只发送push
-                $pushType = config('getui.biz_type.push_' . $userTxt, 0);
+                $pushType = config('push.biz_type.push_' . $userTxt, 0);
                 $apps = $model->apps()->where('is_logout', 0)->first(['device_id']);
                 if (!count($apps)) {
                     Log::error('推送失败，没有找到用户device_id', $context);
@@ -61,7 +61,7 @@ class PushMsgService
                 }
                 break;
             case 'msg'://只发账内信
-                $msgType = config('getui.biz_type.msg_' . $userTxt, 0);
+                $msgType = config('push.biz_type.msg_' . $userTxt, 0);
                 $this->insertMsg($userId, $orderId, $title, $content, $msgType, $class);
                 break;
 
@@ -92,7 +92,7 @@ class PushMsgService
         $class = get_class($model);
         $userTxt = strtolower(substr(strrchr($class, '\\'), 1));
         $typeTxt = strtolower($userTxt . '_logout');
-        $pushType = config('getui.biz_type.push_' . $typeTxt, 0);
+        $pushType = config('push.biz_type.push_' . $typeTxt, 0);
 
         if ($deviceId) {
             $appData = $model->apps()->where('is_logout', 0)->where('device_id', '!=', $deviceId)->get()->toArray();
@@ -146,8 +146,8 @@ class PushMsgService
 
         switch ($status) {
             case 'all'://发送push+msg
-                $pushType = config('getui.biz_type.push_' . $userTxt, 0);
-                $msgType = config('getui.biz_type.msg_' . $userTxt, 0);
+                $pushType = config('push.biz_type.push_' . $userTxt, 0);
+                $msgType = config('push.biz_type.msg_' . $userTxt, 0);
                 $apps = $model->apps()->where('is_logout', 0)->get(['device_id'])->toArray();
                 if (!count($apps)) {
                     Log::error('推送失败，没有找到用户device_id', $context);
@@ -158,7 +158,7 @@ class PushMsgService
                 $this->insertMsg($userId, $orderId, $title, $content, $msgType, $class);
                 break;
             case 'push':// 只发送push
-                $pushType = config('getui.biz_type.push_' . $userTxt, 0);
+                $pushType = config('push.biz_type.push_' . $userTxt, 0);
                 $apps = $model->apps()->where('is_logout', 0)->get(['device_id'])->toArray();
                 if (!count($apps)) {
                     Log::error('推送失败，没有找到用户device_id', $context);
@@ -168,7 +168,7 @@ class PushMsgService
                 }
                 break;
             case 'msg'://只发账内信
-                $msgType = config('getui.biz_type.msg_' . $userTxt, 0);
+                $msgType = config('push.biz_type.msg_' . $userTxt, 0);
                 $this->insertMsg($userId, $orderId, $title, $content, $msgType, $class);
                 break;
 

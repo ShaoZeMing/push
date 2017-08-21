@@ -16,9 +16,8 @@ class PushServiceProvider extends ServiceProvider
     {
 
         $this->mergeConfigFrom(
-            __DIR__.'/config/getui.php', 'getui'
+            __DIR__.'/config/push.php', 'push'
         );
-
     }
 
     /**
@@ -36,6 +35,10 @@ class PushServiceProvider extends ServiceProvider
 
         $this->app->singleton('PushMsgService', function ($app){
             return new PushMsgService();
+        });
+
+        $this->app->singleton('PushManager', function ($app){
+            return new PushManager();
         });
 
         $this->app->singleton('MerGeTuiService', function ($app){

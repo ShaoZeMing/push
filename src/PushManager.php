@@ -7,12 +7,9 @@ namespace Shaozeming\Push;
  * @author gengzhiguo@xiongmaojinfu.com
  * $Id: OrderService.php 2017-03-21 下午4:57 $
  */
-class PushManager extends  PushBase
+class PushManager
 {
 
-    public function push(){
-
-    }
 
     /**
      * 后台取消费用处理商家资金解冻和流水
@@ -24,10 +21,6 @@ class PushManager extends  PushBase
      * @param string $bizComment
      *
      */
-    public function cancelFixFee()
-    {
-    }
-
 
     protected $drivers = [];
 
@@ -56,6 +49,13 @@ class PushManager extends  PushBase
     {
 
         return new GeTuiService();
+    }
+
+
+    public function createJiGuangDriver()
+    {
+
+        return new JiGuangService();
     }
 
 

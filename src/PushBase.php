@@ -10,27 +10,14 @@ namespace Shaozeming\Push;
 class PushBase implements PushInterface
 {
 
-    public function pushOne(){
+    public function pushOne(array $content){
 
     }
 
-    public function pushAll(){
+    public function pushAll(array $content){
 
     }
 
-    /**
-     * 后台取消费用处理商家资金解冻和流水
-     *
-     * @author gengzhiguo@xiongmaojinfu.com
-     *
-     * @param        $order
-     * @param        $fee
-     * @param string $bizComment
-     *
-     */
-    public function cancelFixFee()
-    {
-    }
 
 
 }
