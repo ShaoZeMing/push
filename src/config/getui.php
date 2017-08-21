@@ -1,7 +1,7 @@
 <?php
 return [
     'driver' => env('SYSTEM_OS') ? env('SYSTEM_OS') : 'develop',
-    'tag' => 'merchant',
+    'tag' => 'demo',
     'develop' => [
         'shifu' => [
             'gt_appid' => 'WAqyXNcLpS8OLg4jBywS48',
@@ -15,6 +15,13 @@ return [
             'gt_appkey' => '93MPU2THwl9okpeNf4lNI4',
             'gt_appsecret' => 'kzZuSXVMm29M7owpvId979',
             'gt_mastersecret' => '0QCmCdVZSi8lcyMFXLB4e',
+            'gt_domainurl' => 'http://sdk.open.api.igexin.com/apiex.htm',
+        ],
+        'demo' => [
+            'gt_appid' => '87klYMPe1o515SCcbx7Co5',
+            'gt_appkey' => 'dd9XpsgHff89DJgUgvW6L8',
+            'gt_appsecret' => 'aKMLyeXLCc8hFpjcuf8gW8',
+            'gt_mastersecret' => 'zx85PndZVf8Q1M1Iv9dEy3',
             'gt_domainurl' => 'http://sdk.open.api.igexin.com/apiex.htm',
         ],
     ],
@@ -31,6 +38,13 @@ return [
             'gt_appkey' => 'DKKp54s2knA2MaeGBXuF01',
             'gt_appsecret' => 'exTKWC0M1K6O2Bgig5RiC8',
             'gt_mastersecret' => '0cojzBC7yB86mhOiOVHBuA',
+            'gt_domainurl' => 'http://sdk.open.api.igexin.com/apiex.htm',
+        ],
+        'demo' => [
+            'gt_appid' => '87klYMPe1o515SCcbx7Co5',
+            'gt_appkey' => 'dd9XpsgHff89DJgUgvW6L8',
+            'gt_appsecret' => 'aKMLyeXLCc8hFpjcuf8gW8',
+            'gt_mastersecret' => 'zx85PndZVf8Q1M1Iv9dEy3',
             'gt_domainurl' => 'http://sdk.open.api.igexin.com/apiex.htm',
         ],
     ],

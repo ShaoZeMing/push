@@ -6,14 +6,13 @@ namespace Shaozeming\Push;
 use Illuminate\Support\Facades\Log;
 use Laravel\Passport\HasApiTokens;
 
-require_once  dirname(__DIR__).'/getui/IGt.Push.php';
+require_once  dirname(__FILE__).'/Drivers/getui/IGt.Push.php';
 
 class GeTuiService
 {
 	// use AuthorizesRequests, ValidatesRequests;
 
     public $getui;
-    static public $to;
 	public function __construct()
     {
         $driver = config('getui.driver');
@@ -28,7 +27,7 @@ class GeTuiService
     public function getMerInstance()
     {
         $driver = config('getui.driver');
-        $params = config('getui.'.$driver.'.merchant');
+        $params = config('getui.'.$driver.'.demo');
         $this->getui = new \IGeTui($params['gt_domainurl'], $params['gt_appkey'], $params['gt_mastersecret'], $ssl = NULL);
         $this->gt_appid     = $params['gt_appid'];
         $this->gt_appkey    = $params['gt_appkey'];

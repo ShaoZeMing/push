@@ -8,6 +8,9 @@ namespace Shaozeming\Push;
  */
 interface PushInterface
 {
-    public function push();
+    public function pushOne();
+
+
+    public function pushAll();
 }
  

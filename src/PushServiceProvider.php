@@ -5,7 +5,7 @@ use Illuminate\Support\ServiceProvider;
 
 // use GeTui\App\Console\Commands\MessagePush;
 
-class GeTuiServiceProvider extends ServiceProvider
+class PushServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap any application services.
