@@ -6,21 +6,22 @@ namespace Shaozeming\Push;
 use Illuminate\Support\Facades\Log;
 use Laravel\Passport\HasApiTokens;
 
-require_once  dirname(__FILE__).'/Drivers/getui/IGt.Push.php';
+require_once dirname(__FILE__) . '/Drivers/getui/IGt.Push.php';
 
 class GeTuiService extends PushBase
 {
-	// use AuthorizesRequests, ValidatesRequests;
+    // use AuthorizesRequests, ValidatesRequests;
 
     public $getui;
-	public function __construct()
+
+    public function __construct()
     {
         $driver = config('push.driver');
         $tag = config('push.tag');
-        $params = config('push.'.$driver.'.getui.'.$tag);
+        $params = config('push.' . $driver . '.getui.' . $tag);
         $this->getui = new \IGeTui($params['gt_domainurl'], $params['gt_appkey'], $params['gt_mastersecret'], $ssl = NULL);
-        $this->gt_appid     = $params['gt_appid'];
-        $this->gt_appkey    = $params['gt_appkey'];
+        $this->gt_appid = $params['gt_appid'];
+        $this->gt_appkey = $params['gt_appkey'];
         $this->gt_appsecret = $params['gt_appsecret'];
         $this->gt_mastersecret = $params['gt_mastersecret'];
     }
@@ -29,16 +30,16 @@ class GeTuiService extends PushBase
     {
         $driver = config('push.driver');
         $tag = config('push.tag');
-        $params = config('push.'.$driver.'.getui.'.$tag);
+        $params = config('push.' . $driver . '.getui.' . $tag);
         $this->getui = new \IGeTui($params['gt_domainurl'], $params['gt_appkey'], $params['gt_mastersecret'], $ssl = NULL);
-        $this->gt_appid     = $params['gt_appid'];
-        $this->gt_appkey    = $params['gt_appkey'];
+        $this->gt_appid = $params['gt_appid'];
+        $this->gt_appkey = $params['gt_appkey'];
         $this->gt_appsecret = $params['gt_appsecret'];
         $this->gt_mastersecret = $params['gt_mastersecret'];
         return $this;
     }
 
-    public function pushToSignal($clientId, $transContent, $content, $title, $shortUrl='', $deviceOs='ios', $logoUrl='')
+    public function pushToSignal($clientId, $transContent, $content, $title, $shortUrl = '', $deviceOs = 'ios', $logoUrl = '')
     {
         //消息模版：
         // 4.NotyPopLoadTemplate：通知弹框下载功能模板
@@ -47,14 +48,14 @@ class GeTuiService extends PushBase
         $message = new \IGtSingleMessage();
 
         $message->set_isOffline(true);//是否离线
-        $message->set_offlineExpireTime(3600*12*1000);//离线时间
+        $message->set_offlineExpireTime(3600 * 12 * 1000);//离线时间
         $message->set_data($template);//设置推送消息类型
         //$message->set_PushNetWorkType(0);//设置是否根据WIFI推送消息，2为4G/3G/2G，1为wifi推送，0为不限制推送
         //接收方
         $target = new \IGtTarget();
         $target->set_appId($this->gt_appid);
         $target->set_clientId($clientId);
-    //    $target->set_alias(Alias);
+        //    $target->set_alias(Alias);
         // var_export($this->getui);exit;
         try {
             $rep = $this->getui->pushMessageToSingle($message, $target);
@@ -73,19 +74,19 @@ class GeTuiService extends PushBase
         //定义"ListMessage"信息体
         $message = new \IGtListMessage();
         $message->set_isOffline(true);//是否离线
-        $message->set_offlineExpireTime(3600*12*1000);//离线时间
+        $message->set_offlineExpireTime(3600 * 12 * 1000);//离线时间
         $message->set_data($template);//设置推送消息类型
         $message->set_PushNetWorkType(0);//设置是否根据WIFI推送消息，1为wifi推送，0为不限制推送
-        $contentId  = $this->getui->getContentId($message);
+        $contentId = $this->getui->getContentId($message);
         $targetList = [];
-        foreach($clientIds as $key => $clientId) {
+        foreach ($clientIds as $key => $clientId) {
             $target = new \IGtTarget();
             $target->set_appId($this->gt_appid);
             $target->set_clientId($clientId);
             $targetList[] = $target;
-            Log::info('c=getuiService f=pushMessageToList clientId='.$clientId);
+            Log::info('c=getuiService f=pushMessageToList clientId=' . $clientId);
         }
-        try{
+        try {
             $rep = $this->getui->pushMessageToList($contentId, $targetList);
         } catch (\RequestException $e) {
             $requestId = $e->getRequestId();
@@ -104,7 +105,7 @@ class GeTuiService extends PushBase
         $message->set_isOffline(true);
         $message->set_offlineExpireTime(10 * 60 * 1000);//离线时间单位为毫秒，例，两个小时离线为3600*1000*2
         $message->set_data($template);
-        $appIdList     = array($this->gt_appid);
+        $appIdList = array($this->gt_appid);
         $phoneTypeList = array('ANDROID', 'IOS');
 
         // $cdt = new \AppConditions();
@@ -114,13 +115,13 @@ class GeTuiService extends PushBase
         $message->set_PushNetWorkType(0);//设置是否根据WIFI推送消息，1为wifi推送，0为不限制推送
         // $message->set_speed(100);
         $rep = $this->getui->pushMessageToApp($message);
-        Log::info('c=getuiService f=pushMsgToApp rep='.json_encode($rep));
+        Log::info('c=getuiService f=pushMsgToApp rep=' . json_encode($rep));
         return $rep;
     }
 
-    public function getNotificationTemplateDemo($transContent, $content, $title, $logoUrl='')
+    public function getNotificationTemplateDemo($transContent, $content, $title, $logoUrl = '')
     {
-        $template =  new \IGtNotificationTemplate();
+        $template = new \IGtNotificationTemplate();
         $template->set_appId($this->gt_appid);              //应用appid
         $template->set_appkey($this->gt_appkey);            //应用appkey
         $template->set_transmissionType(1);               //透传消息类型
@@ -136,7 +137,7 @@ class GeTuiService extends PushBase
         return $template;
     }
 
-    public function getTransmissionTemplateDemo($transContent, $content, $title, $logoUrl='')
+    public function getTransmissionTemplateDemo($transContent, $content, $title, $logoUrl = '')
     {
         $template = new \IGtTransmissionTemplate();
         $template->set_appId($this->gt_appid);              //应用appid
@@ -169,18 +170,19 @@ class GeTuiService extends PushBase
         $params["action"] = "getPushMsgResult";
         $params["appkey"] = $this->gt_appkey;
         $params["taskId"] = $taskId;
-        $sign   = $this->createSign($params,$this->gt_mastersecret);
+        $sign = $this->createSign($params, $this->gt_mastersecret);
         $params["sign"] = $sign;
-        $data   = json_encode($params);
-        $result = $this->httpPost($url,$data);
+        $data = json_encode($params);
+        $result = $this->httpPost($url, $data);
         return $result;
     }
-    public function createSign($params,$masterSecret)
+
+    public function createSign($params, $masterSecret)
     {
-        $sign=$masterSecret;
-        foreach ($params as $key => $val){
-            if (isset($key) && isset($val) ){
-                if(is_string($val) || is_numeric($val) ){ // 针对非 array object 对象进行sign
+        $sign = $masterSecret;
+        foreach ($params as $key => $val) {
+            if (isset($key) && isset($val)) {
+                if (is_string($val) || is_numeric($val)) { // 针对非 array object 对象进行sign
                     $sign .= $key . ($val); //urldecode
                 }
             }
@@ -188,7 +190,7 @@ class GeTuiService extends PushBase
         return md5($sign);
     }
 
-    public function httpPost($url,$data)
+    public function httpPost($url, $data)
     {
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -204,15 +206,57 @@ class GeTuiService extends PushBase
     }
 
 
-
-    public function pushOne(array $content)
+    public function pushOne(array $data)
     {
+        $title = isset($data['title']) ? $data['title'] : '';
+        $content = isset($data['content']) ? $data['content'] : '';
+        $deviceId = isset($data['device_id']) ? $data['device_id'] : '';
+        $type = isset($data['type']) ? $data['type'] : 0;
+        $shortUrl = isset($data['url']) ? $data['url'] : '';
+        $logoUrl = isset($data['logo_url']) ? $data['logo_url'] : '';
+        $deviceOs = isset($data['device_os']) ? $data['device_os'] : 'ios';
+
+        $transContentArr = [
+            'title' => $title,
+            'content' => $content,
+            'type' => $type,
+        ];
+        if ($shortUrl) {
+            $transContentArr['link_url'] = $shortUrl;
+        }
+
+        $transContent = json_encode($transContentArr);
+
+        return $this->pushToSignal($deviceId, $transContent, $content, $title, $shortUrl, $deviceOs, $logoUrl);
+
 
     }
 
 
-
-    public function pushAll(array $content)
+    public function pushAll(array $data)
     {
+        $title = isset($data['title']) ? $data['title'] : '';
+        $content = isset($data['content']) ? $data['content'] : '';
+        $deviceIds = isset($data['device_id']) ? $data['device_id'] : '';
+        $type = isset($data['type']) ? $data['type'] : 0;
+        $shortUrl = isset($data['url']) ? $data['url'] : '';
+        $logoUrl = isset($data['logo_url']) ? $data['logo_url'] : '';
+        $deviceOs = isset($data['device_os']) ? $data['device_os'] : 'ios';
+
+        $transContentArr = [
+            'title' => $title,
+            'content' => $content,
+            'type' => $type,
+        ];
+        if ($shortUrl) {
+            $transContentArr['link_url'] = $shortUrl;
+        }
+
+        $transContent = json_encode($transContentArr);
+
+        return $this->pushMessageToList($deviceIds, $transContent, $content, $title, $shortUrl, $deviceOs, $logoUrl);
+
+
+
     }
 }
