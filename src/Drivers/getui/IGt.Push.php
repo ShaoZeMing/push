@@ -60,7 +60,7 @@ Class IGeTui
     {
         if($hosts == null || count($hosts) == 0)
         {
-            $hosts = isset(IGeTui::$appkeyUrlList[$this->appkey])?IGeTui:[$this->appkey]:null;
+            $hosts = isset(IGeTui::$appkeyUrlList[$this->appkey])?IGeTui::$appkeyUrlList[$this->appkey]:null;
             if($hosts == null || count($hosts) == 0)
             {
                 $hosts = $this->getOSPushDomainUrlList($this->domainUrlList,$this->appkey);
