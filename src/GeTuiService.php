@@ -16,7 +16,8 @@ class GeTuiService
 	public function __construct()
     {
         $driver = config('getui.driver');
-        $params = config('getui.'.$driver.'.shifu');
+        $tag = config('getui.tag');
+        $params = config('getui.'.$driver.'.'.$tag);
         $this->getui = new \IGeTui($params['gt_domainurl'], $params['gt_appkey'], $params['gt_mastersecret'], $ssl = NULL);
         $this->gt_appid     = $params['gt_appid'];
         $this->gt_appkey    = $params['gt_appkey'];
@@ -27,7 +28,8 @@ class GeTuiService
     public function getMerInstance()
     {
         $driver = config('getui.driver');
-        $params = config('getui.'.$driver.'.demo');
+        $tag = config('getui.tag');
+        $params = config('getui.'.$driver.'.'.$tag);
         $this->getui = new \IGeTui($params['gt_domainurl'], $params['gt_appkey'], $params['gt_mastersecret'], $ssl = NULL);
         $this->gt_appid     = $params['gt_appid'];
         $this->gt_appkey    = $params['gt_appkey'];
