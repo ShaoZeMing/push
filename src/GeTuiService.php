@@ -14,11 +14,15 @@ class GeTuiService extends PushBase
 
     public $getui;
 
-    public function __construct()
+    public function __construct($config=[])
     {
-        $driver = config('push.driver');
-        $tag = config('push.tag');
-        $params = config('push.' . $driver . '.getui.' . $tag);
+        if(count($config)){
+            $params = $config;
+        }else{
+            $driver = config('push.driver');
+            $tag = config('push.tag');
+            $params = config('push.' . $driver . '.getui.' . $tag);
+        }
         $this->getui = new \IGeTui($params['gt_domainurl'], $params['gt_appkey'], $params['gt_mastersecret'], $ssl = NULL);
         $this->gt_appid = $params['gt_appid'];
         $this->gt_appkey = $params['gt_appkey'];
@@ -26,11 +30,15 @@ class GeTuiService extends PushBase
         $this->gt_mastersecret = $params['gt_mastersecret'];
     }
 
-    public function getMerInstance()
+    public function getMerInstance($config = [])
     {
-        $driver = config('push.driver');
-        $tag = config('push.tag');
-        $params = config('push.' . $driver . '.getui.' . $tag);
+        if(count($config)){
+            $params = $config;
+        }else{
+            $driver = config('push.driver');
+            $tag = config('push.tag');
+            $params = config('push.' . $driver . '.getui.' . $tag);
+        }
         $this->getui = new \IGeTui($params['gt_domainurl'], $params['gt_appkey'], $params['gt_mastersecret'], $ssl = NULL);
         $this->gt_appid = $params['gt_appid'];
         $this->gt_appkey = $params['gt_appkey'];
@@ -84,7 +92,7 @@ class GeTuiService extends PushBase
             $target->set_appId($this->gt_appid);
             $target->set_clientId($clientId);
             $targetList[] = $target;
-            Log::info('c=getuiService f=pushMessageToList clientId=' . $clientId);
+//            Log::info('c=getuiService f=pushMessageToList clientId=' . $clientId);
         }
         try {
             $rep = $this->getui->pushMessageToList($contentId, $targetList);
@@ -115,7 +123,7 @@ class GeTuiService extends PushBase
         $message->set_PushNetWorkType(0);//设置是否根据WIFI推送消息，1为wifi推送，0为不限制推送
         // $message->set_speed(100);
         $rep = $this->getui->pushMessageToApp($message);
-        Log::info('c=getuiService f=pushMsgToApp rep=' . json_encode($rep));
+//        Log::info('c=getuiService f=pushMsgToApp rep=' . json_encode($rep));
         return $rep;
     }
 
@@ -206,11 +214,13 @@ class GeTuiService extends PushBase
     }
 
 
-    public function pushOne(array $data)
+    public function pushOne($deviceId, array $data)
     {
+        if(empty($deviceId)){
+            throw new \Exception('deviceId 不能为空');
+        }
         $title = isset($data['title']) ? $data['title'] : '';
         $content = isset($data['content']) ? $data['content'] : '';
-        $deviceId = isset($data['device_id']) ? $data['device_id'] : '';
         $type = isset($data['type']) ? $data['type'] : 0;
         $shortUrl = isset($data['url']) ? $data['url'] : '';
         $logoUrl = isset($data['logo_url']) ? $data['logo_url'] : '';
@@ -227,13 +237,14 @@ class GeTuiService extends PushBase
 
         $transContent = json_encode($transContentArr);
 
-        return $this->pushToSignal($deviceId, $transContent, $content, $title, $shortUrl, $deviceOs, $logoUrl);
+        $result = $this->pushToSignal($deviceId, $transContent, $content, $title, $shortUrl, $deviceOs, $logoUrl);
 
+        return $result;
 
     }
 
 
-    public function pushAll(array $data)
+    public function pushAll($deviceIds, array $data)
     {
         $title = isset($data['title']) ? $data['title'] : '';
         $content = isset($data['content']) ? $data['content'] : '';
@@ -255,7 +266,6 @@ class GeTuiService extends PushBase
         $transContent = json_encode($transContentArr);
 
         return $this->pushMessageToList($deviceIds, $transContent, $content, $title, $shortUrl, $deviceOs, $logoUrl);
-
 
 
     }

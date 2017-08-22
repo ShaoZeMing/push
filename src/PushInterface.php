@@ -8,9 +8,9 @@ namespace Shaozeming\Push;
  */
 interface PushInterface
 {
-    public function pushOne(array $data);
+    public function pushOne($deviceId, array $data);
 
 
-    public function pushAll(array $data);
+    public function pushAll($deviceIds, array $data);
 }
  

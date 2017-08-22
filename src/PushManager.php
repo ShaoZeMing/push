@@ -48,7 +48,15 @@ class PushManager
     public function createGeTuiDriver()
     {
 
-        return new GeTuiService();
+        $config =  [
+        'gt_appid' => '87klYMPe1o515SCcbx7Co5',
+        'gt_appkey' => 'dd9XpsgHff89DJgUgvW6L8',
+        'gt_appsecret' => 'aKMLyeXLCc8hFpjcuf8gW8',
+        'gt_mastersecret' => 'zx85PndZVf8Q1M1Iv9dEy3',
+        'gt_domainurl' => 'http://sdk.open.api.igexin.com/apiex.htm',
+    ];
+
+        return new GeTuiService($config);
     }
 
 

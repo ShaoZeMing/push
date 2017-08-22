@@ -9,6 +9,7 @@
 namespace Shaozeming\Push\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Shaozeming\Push\GeTuiService;
 use Shaozeming\Push\Message;
 use Shaozeming\Push\PushManager;
 
@@ -21,22 +22,68 @@ class TestPush extends TestCase
         $this->instance = (new PushManager())->driver('ge_tui');
     }
 
-    public function testSmsManager()
+    public function testPushManager()
     {
-        $this->assertInstanceOf(PushManager::class, $this->instance);
+        $this->assertInstanceOf(GeTuiService::class, $this->instance);
     }
 
-    public function testMessage()
+    public function testPush()
     {
+        try {
         $message = new Message();
         $message->setContent('您的验证码是100987');
-//        $this->assertEquals('这是一条love', $message->getContent());
-        $message->setTitle('我是个推标题');
-//        $this->assertEquals('18518480028', $message->getMobile());
+        $this->assertEquals('您的验证码是100987', $message->getContent());
+        $message->setTitle('getui test');
+        $this->assertEquals('getui test', $message->getTitle());
+//
+//        $this->instance->setMessage($message);
+//        $this->assertInstanceOf(Message::class, $this->instance->getMessage());
+        $this->expectException(\Exception::class);
 
-        $this->instance->setMessage($message);
-        $this->assertInstanceOf(Message::class, $this->instance->getMessage());
-        $this->expectException(ShiYuanSmsException::class);
-        $this->instance->pushOne();
+
+
+        echo "发送push 中";
+
+            $deviceId = 'b2e5b64931f06f617e363b74c8057cf6';
+            $title = 'getui test';
+            $content = '123123,test 您负责的的工单已经追加元';
+
+//            $title = request()->get('title', $title);
+//            $content = request()->get('content', $content);
+            $transContentArr = [
+                'title' => $title,
+                'content' => $content,
+            ];
+
+            //        $deviceId = request()->get('device_id',$deviceId);
+//
+            $data = [
+                'type' => 9,
+                'title' => $title,
+                'content' => $content,
+                'device_id'=> $deviceId,
+            ];
+//
+
+//        $pushs =json_encode($push);
+//        $res =json_encode($getuiResponse);
+//        echo '<br>';
+//        echo $pushs;
+//        echo '<br>';
+//        echo $res;
+
+            $transContent = json_encode($transContentArr);
+//            $push = app('PushManager')->driver('ge_tui');
+//            $getuiResponse = $this->instance->pushOne($data);
+            $getuiResponse =  $this->instance->pushToSignal($deviceId, $transContent, $content, $title);
+//            $getuiResponse = app('GeTuiService')->pushToSignal($deviceId, $transContent, $content, $title);
+
+            $res = json_encode($getuiResponse);
+            echo '<br>';
+            echo $res;
+            Log::info($res, [__METHOD__]);
+        } catch (\Exception $e) {
+            echo "Error : 错误" . $e->getMessage();
+        }
     }
 }
