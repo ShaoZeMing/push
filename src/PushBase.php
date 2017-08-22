@@ -10,12 +10,7 @@ namespace Shaozeming\Push;
 class PushBase implements PushInterface
 {
 
-    public function pushOne($deviceId, array $data)
-    {
-
-    }
-
-    public function pushAll($deviceIds, array $data)
+    public function push($deviceId, array $data)
     {
 
     }

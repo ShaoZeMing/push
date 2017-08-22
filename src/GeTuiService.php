@@ -3,8 +3,7 @@
 namespace Shaozeming\Push;
 
 
-use Illuminate\Support\Facades\Log;
-use Laravel\Passport\HasApiTokens;
+//use Illuminate\Support\Facades\Log;
 
 require_once dirname(__FILE__) . '/Drivers/getui/IGt.Push.php';
 
@@ -214,7 +213,7 @@ class GeTuiService extends PushBase
     }
 
 
-    public function pushOne($deviceId, array $data)
+    public function push($deviceId, array $data)
     {
         if(empty($deviceId)){
             throw new \Exception('deviceId 不能为空');
@@ -234,39 +233,18 @@ class GeTuiService extends PushBase
         if ($shortUrl) {
             $transContentArr['link_url'] = $shortUrl;
         }
-
         $transContent = json_encode($transContentArr);
 
-        $result = $this->pushToSignal($deviceId, $transContent, $content, $title, $shortUrl, $deviceOs, $logoUrl);
+        if(is_array($deviceId)){
+            $result = $this->pushMessageToList($deviceId, $transContent, $content, $title, $shortUrl);
 
+        }else{
+            $result = $this->pushToSignal($deviceId, $transContent, $content, $title, $shortUrl, $deviceOs, $logoUrl);
+
+        }
         return $result;
 
     }
 
 
-    public function pushAll($deviceIds, array $data)
-    {
-        $title = isset($data['title']) ? $data['title'] : '';
-        $content = isset($data['content']) ? $data['content'] : '';
-        $deviceIds = isset($data['device_id']) ? $data['device_id'] : '';
-        $type = isset($data['type']) ? $data['type'] : 0;
-        $shortUrl = isset($data['url']) ? $data['url'] : '';
-        $logoUrl = isset($data['logo_url']) ? $data['logo_url'] : '';
-        $deviceOs = isset($data['device_os']) ? $data['device_os'] : 'ios';
-
-        $transContentArr = [
-            'title' => $title,
-            'content' => $content,
-            'type' => $type,
-        ];
-        if ($shortUrl) {
-            $transContentArr['link_url'] = $shortUrl;
-        }
-
-        $transContent = json_encode($transContentArr);
-
-        return $this->pushMessageToList($deviceIds, $transContent, $content, $title, $shortUrl, $deviceOs, $logoUrl);
-
-
-    }
 }
