@@ -216,11 +216,14 @@ class GeTuiService extends PushBase
     public function push($deviceId, array $data, $function = 'json_encode')
     {
         if (empty($deviceId)) {
-            throw new \Exception('deviceId 不能为空');
+            throw new \Exception('device_id not empty');
         }
 
-        $title = isset($data['title']) ? $data['title'] : '';
-        $content = isset($data['content']) ? $data['content'] : '';
+        if(!isset($data['content']) || !isset($data['title'])){
+            throw new \Exception('content and title not empty');
+        }
+        $title = $data['title'];
+        $content =  $data['content'];
         $type = isset($data['type']) ? $data['type'] : 0;
         $shortUrl = isset($data['url']) ? $data['url'] : '';
         $logoUrl = isset($data['logo_url']) ? $data['logo_url'] : '';
@@ -231,12 +234,6 @@ class GeTuiService extends PushBase
         $content = $message->getContent();
         $message->setTitle($title);
         $title = $message->getTitle();
-//        $transContentArr = [
-//            'title' => $title,
-//            'content' => $content,
-//            'type' => $type,
-//        ];
-
         $transContent = $function($data);
 
         if (is_array($deviceId)) {
