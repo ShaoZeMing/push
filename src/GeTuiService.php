@@ -13,11 +13,11 @@ class GeTuiService extends PushBase
 
     public $getui;
 
-    public function __construct($config=[])
+    public function __construct($config = [])
     {
-        if(count($config)){
+        if (count($config)) {
             $params = $config;
-        }else{
+        } else {
             $driver = config('push.driver');
             $tag = config('push.tag');
             $params = config('push.' . $driver . '.getui.' . $tag);
@@ -31,9 +31,9 @@ class GeTuiService extends PushBase
 
     public function getMerInstance($config = [])
     {
-        if(count($config)){
+        if (count($config)) {
             $params = $config;
-        }else{
+        } else {
             $driver = config('push.driver');
             $tag = config('push.tag');
             $params = config('push.' . $driver . '.getui.' . $tag);
@@ -213,11 +213,12 @@ class GeTuiService extends PushBase
     }
 
 
-    public function push($deviceId, array $data)
+    public function push($deviceId, array $data, $function = 'json_encode')
     {
-        if(empty($deviceId)){
+        if (empty($deviceId)) {
             throw new \Exception('deviceId 不能为空');
         }
+
         $title = isset($data['title']) ? $data['title'] : '';
         $content = isset($data['content']) ? $data['content'] : '';
         $type = isset($data['type']) ? $data['type'] : 0;
@@ -229,22 +230,19 @@ class GeTuiService extends PushBase
         $message->setContent($content);
         $content = $message->getContent();
         $message->setTitle($title);
-        $title= $message->getTitle();
+        $title = $message->getTitle();
+//        $transContentArr = [
+//            'title' => $title,
+//            'content' => $content,
+//            'type' => $type,
+//        ];
 
-        $transContentArr = [
-            'title' => $title,
-            'content' => $content,
-            'type' => $type,
-        ];
-        if ($shortUrl) {
-            $transContentArr['link_url'] = $shortUrl;
-        }
-        $transContent = json_encode($transContentArr);
+        $transContent = $function($data);
 
-        if(is_array($deviceId)){
+        if (is_array($deviceId)) {
             $result = $this->pushMessageToList($deviceId, $transContent, $content, $title, $shortUrl);
 
-        }else{
+        } else {
             $result = $this->pushToSignal($deviceId, $transContent, $content, $title, $shortUrl, $deviceOs, $logoUrl);
 
         }
