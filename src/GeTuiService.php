@@ -11,7 +11,7 @@ class GeTuiService extends PushBase
 {
     // use AuthorizesRequests, ValidatesRequests;
 
-    public $getui;
+    public $obj;
 
     public function __construct($config = [])
     {
@@ -22,7 +22,7 @@ class GeTuiService extends PushBase
             $tag = config('push.tag');
             $params = config('push.' . $driver . '.getui.' . $tag);
         }
-        $this->getui = new \IGeTui($params['gt_domainurl'], $params['gt_appkey'], $params['gt_mastersecret'], $ssl = NULL);
+        $this->obj = new \IGeTui($params['gt_domainurl'], $params['gt_appkey'], $params['gt_mastersecret'], $ssl = NULL);
         $this->gt_appid = $params['gt_appid'];
         $this->gt_appkey = $params['gt_appkey'];
         $this->gt_appsecret = $params['gt_appsecret'];
@@ -38,7 +38,7 @@ class GeTuiService extends PushBase
             $tag = config('push.tag');
             $params = config('push.' . $driver . '.getui.' . $tag);
         }
-        $this->getui = new \IGeTui($params['gt_domainurl'], $params['gt_appkey'], $params['gt_mastersecret'], $ssl = NULL);
+        $this->obj = new \IGeTui($params['gt_domainurl'], $params['gt_appkey'], $params['gt_mastersecret'], $ssl = NULL);
         $this->gt_appid = $params['gt_appid'];
         $this->gt_appkey = $params['gt_appkey'];
         $this->gt_appsecret = $params['gt_appsecret'];
@@ -63,13 +63,13 @@ class GeTuiService extends PushBase
         $target->set_appId($this->gt_appid);
         $target->set_clientId($clientId);
         //    $target->set_alias(Alias);
-        // var_export($this->getui);exit;
+        // var_export($this->obj);exit;
         try {
-            $rep = $this->getui->pushMessageToSingle($message, $target);
+            $rep = $this->obj->pushMessageToSingle($message, $target);
         } catch (\RequestException $e) {
             $requestId = $e->getRequestId();
             //失败时重发
-            $rep = $this->getui->pushMessageToSingle($message, $target, $requestId);
+            $rep = $this->obj->pushMessageToSingle($message, $target, $requestId);
         }
         return $rep;
     }
@@ -84,7 +84,7 @@ class GeTuiService extends PushBase
         $message->set_offlineExpireTime(3600 * 12 * 1000);//离线时间
         $message->set_data($template);//设置推送消息类型
         $message->set_PushNetWorkType(0);//设置是否根据WIFI推送消息，1为wifi推送，0为不限制推送
-        $contentId = $this->getui->getContentId($message);
+        $contentId = $this->obj->getContentId($message);
         $targetList = [];
         foreach ($clientIds as $key => $clientId) {
             $target = new \IGtTarget();
@@ -94,10 +94,10 @@ class GeTuiService extends PushBase
 //            Log::info('c=getuiService f=pushMessageToList clientId=' . $clientId);
         }
         try {
-            $rep = $this->getui->pushMessageToList($contentId, $targetList);
+            $rep = $this->obj->pushMessageToList($contentId, $targetList);
         } catch (\RequestException $e) {
             $requestId = $e->getRequestId();
-            $rep = $this->getui->pushMessageToList($contentId, $targetList, $requestId);
+            $rep = $this->obj->pushMessageToList($contentId, $targetList, $requestId);
         }
         return $rep;
     }
@@ -121,7 +121,7 @@ class GeTuiService extends PushBase
         // $message->set_conditions($cdt);
         $message->set_PushNetWorkType(0);//设置是否根据WIFI推送消息，1为wifi推送，0为不限制推送
         // $message->set_speed(100);
-        $rep = $this->getui->pushMessageToApp($message);
+        $rep = $this->obj->pushMessageToApp($message);
 //        Log::info('c=getuiService f=pushMsgToApp rep=' . json_encode($rep));
         return $rep;
     }
