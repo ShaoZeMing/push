@@ -13,11 +13,15 @@ class JiGuangService extends PushBase
 
     public $obj;
 
-    public function __construct()
+    public function __construct($config = [])
     {
-        $driver = config('jiguang.driver');
-        $tag = config('jiguang.tag');
-        $params = config('jiguang.' . $driver . '.' . $tag);
+        if (count($config)) {
+            $params = $config;
+        } else {
+            $driver = config('push.driver');
+            $tag = config('push.tag');
+            $params = config('push.' . $driver . '.jigaung.' . $tag);
+        }
         $this->obj = new JPush($params['gt_appkey'], $params['gt_mastersecret']);
         $this->gt_appid = $params['gt_appid'];
         $this->gt_appkey = $params['gt_appkey'];
@@ -26,11 +30,15 @@ class JiGuangService extends PushBase
 
     }
 
-    public function getMerInstance()
+    public function getMerInstance($config=[])
     {
-        $driver = config('getui.driver');
-        $tag = config('getui.tag');
-        $params = config('getui.' . $driver . '.' . $tag);
+        if (count($config)) {
+            $params = $config;
+        } else {
+            $driver = config('push.driver');
+            $tag = config('push.tag');
+            $params = config('push.' . $driver . '.jigaung.' . $tag);
+        }
         $this->obj = new JPush($params['gt_appkey'], $params['gt_mastersecret']);
         $this->gt_appid = $params['gt_appid'];
         $this->gt_appkey = $params['gt_appkey'];
