@@ -11,19 +11,20 @@ class PushManager
 {
 
 
-    /**
-     * 后台取消费用处理商家资金解冻和流水
-     *
-     * @author gengzhiguo@xiongmaojinfu.com
-     *
-     * @param        $order
-     * @param        $fee
-     * @param string $bizComment
-     *
-     */
 
     protected $drivers = [];
 
+
+
+    /**
+     * 获取对应的服务模型对象
+     *
+     * @author shaozeming@xiongmaojinfu.com
+     *
+     * @param    string    $driver
+     * @param    array    $config
+     *
+     */
     public function driver($driver,$config=[])
     {
         $method = 'create' . $this->studly($driver) . 'Driver';
@@ -45,6 +46,16 @@ class PushManager
         return str_replace(' ', '', $value);
     }
 
+
+
+    /**
+     * 获取GeTui服务模型对象
+     *
+     * @author shaozeming@xiongmaojinfu.com
+     *
+     * @param    array    $config
+     *
+     */
     public function createGeTuiDriver($config)
     {
 
@@ -52,6 +63,15 @@ class PushManager
     }
 
 
+
+    /**
+     * 获取极光推送服务模型对象
+     *
+     * @author shaozeming@xiongmaojinfu.com
+     *
+     * @param    array    $config
+     *
+     */
     public function createJiGuangDriver($config)
     {
 

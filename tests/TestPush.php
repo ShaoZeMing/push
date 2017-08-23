@@ -10,7 +10,6 @@ namespace Shaozeming\Push\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Shaozeming\Push\GeTuiService;
-use Shaozeming\Push\Message;
 use Shaozeming\Push\PushManager;
 
 class TestPush extends TestCase
@@ -19,7 +18,14 @@ class TestPush extends TestCase
 
     public function setUp()
     {
-        $this->instance = (new PushManager())->driver('ge_tui');
+        $config =  [
+            'gt_appid' => '87klYMPe1o515SCcbx7Co5',
+            'gt_appkey' => 'dd9XpsgHff89DJgUgvW6L8',
+            'gt_appsecret' => 'aKMLyeXLCc8hFpjcuf8gW8',
+            'gt_mastersecret' => 'zx85PndZVf8Q1M1Iv9dEy3',
+            'gt_domainurl' => 'http://sdk.open.api.igexin.com/apiex.htm',
+        ];
+        $this->instance = (new PushManager())->driver('ge_tui',$config);
     }
 
     public function testPushManager()
@@ -29,54 +35,31 @@ class TestPush extends TestCase
 
     public function testPush()
     {
-        try {
-        $message = new Message();
-        $message->setContent('您的验证码是100987');
-        $this->assertEquals('您的验证码是100987', $message->getContent());
-        $message->setTitle('getui test');
-        $this->assertEquals('getui test', $message->getTitle());
-//
-//        $this->instance->setMessage($message);
-//        $this->assertInstanceOf(Message::class, $this->instance->getMessage());
-        $this->expectException(\Exception::class);
-
-
-
         echo "发送push 中";
-
+        try {
+            Log::info('testPush', [__METHOD__]);
             $deviceId = 'b2e5b64931f06f617e363b74c8057cf6';
             $title = 'getui test';
             $content = '123123,test 您负责的的工单已经追加元';
 
-//            $title = request()->get('title', $title);
-//            $content = request()->get('content', $content);
-            $transContentArr = [
-                'title' => $title,
-                'content' => $content,
-            ];
-
-            //        $deviceId = request()->get('device_id',$deviceId);
-//
             $data = [
                 'type' => 9,
                 'title' => $title,
                 'content' => $content,
-                'device_id'=> $deviceId,
             ];
-//
 
-//        $pushs =json_encode($push);
-//        $res =json_encode($getuiResponse);
-//        echo '<br>';
-//        echo $pushs;
-//        echo '<br>';
-//        echo $res;
+            $config =  [
+                'gt_appid' => '87klYMPe1o515SCcbx7Co5',
+                'gt_appkey' => 'dd9XpsgHff89DJgUgvW6L8',
+                'gt_appsecret' => 'aKMLyeXLCc8hFpjcuf8gW8',
+                'gt_mastersecret' => 'zx85PndZVf8Q1M1Iv9dEy3',
+                'gt_domainurl' => 'http://sdk.open.api.igexin.com/apiex.htm',
+            ];
 
-            $transContent = json_encode($transContentArr);
-//            $push = app('PushManager')->driver('ge_tui');
-//            $getuiResponse = $this->instance->pushOne($data);
-            $getuiResponse =  $this->instance->pushToSignal($deviceId, $transContent, $content, $title);
-//            $getuiResponse = app('GeTuiService')->pushToSignal($deviceId, $transContent, $content, $title);
+            $push =(new PushManager())->driver('ge_tui',$config);
+
+//            $push = app('PushManager')->driver('ge_tui',$config);
+            $getuiResponse = $push->push($deviceId, $data);
 
             $res = json_encode($getuiResponse);
             echo '<br>';

@@ -225,6 +225,12 @@ class GeTuiService extends PushBase
         $logoUrl = isset($data['logo_url']) ? $data['logo_url'] : '';
         $deviceOs = isset($data['device_os']) ? $data['device_os'] : 'ios';
 
+        $message = new Message();
+        $message->setContent($content);
+        $content = $message->getContent();
+        $message->setTitle($title);
+        $title= $message->getTitle();
+
         $transContentArr = [
             'title' => $title,
             'content' => $content,
