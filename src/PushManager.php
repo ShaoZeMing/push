@@ -24,12 +24,12 @@ class PushManager
 
     protected $drivers = [];
 
-    public function driver($driver)
+    public function driver($driver,$config=[])
     {
         $method = 'create' . $this->studly($driver) . 'Driver';
 
         if (method_exists($this, $method)) {
-            return $this->$method();
+            return $this->$method($config);
         }
         throw new \InvalidArgumentException("Driver [$driver] not supported.");
     }
@@ -45,25 +45,17 @@ class PushManager
         return str_replace(' ', '', $value);
     }
 
-    public function createGeTuiDriver()
+    public function createGeTuiDriver($config)
     {
-
-        $config =  [
-        'gt_appid' => '87klYMPe1o515SCcbx7Co5',
-        'gt_appkey' => 'dd9XpsgHff89DJgUgvW6L8',
-        'gt_appsecret' => 'aKMLyeXLCc8hFpjcuf8gW8',
-        'gt_mastersecret' => 'zx85PndZVf8Q1M1Iv9dEy3',
-        'gt_domainurl' => 'http://sdk.open.api.igexin.com/apiex.htm',
-    ];
 
         return new GeTuiService($config);
     }
 
 
-    public function createJiGuangDriver()
+    public function createJiGuangDriver($config)
     {
 
-        return new JiGuangService();
+        return new JiGuangService($config);
     }
 
 
