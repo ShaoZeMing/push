@@ -23,7 +23,9 @@ class JiGuangService extends PushBase
             $params = config('push.' . $driver . '.jigaung.' . $tag);
         }
         $this->obj = new JPush($params['gt_appkey'], $params['gt_mastersecret']);
+        $this->gt_appid = $params['gt_appid'];
         $this->gt_appkey = $params['gt_appkey'];
+        $this->gt_appsecret = $params['gt_appsecret'];
         $this->gt_mastersecret = $params['gt_mastersecret'];
 
     }
@@ -38,7 +40,9 @@ class JiGuangService extends PushBase
             $params = config('push.' . $driver . '.jigaung.' . $tag);
         }
         $this->obj = new JPush($params['gt_appkey'], $params['gt_mastersecret']);
+        $this->gt_appid = $params['gt_appid'];
         $this->gt_appkey = $params['gt_appkey'];
+        $this->gt_appsecret = $params['gt_appsecret'];
         $this->gt_mastersecret = $params['gt_mastersecret'];
         return $this;
     }
@@ -54,18 +58,22 @@ class JiGuangService extends PushBase
         if (!isset($data['content']) || !isset($data['title'])) {
             throw new \Exception('content and title not empty');
         }
+        $title = $data['title'];
+        $content = $data['content'];
+        $type = isset($data['type']) ? $data['type'] : 0;
+        $shortUrl = isset($data['url']) ? $data['url'] : '';
+        $logoUrl = isset($data['logo_url']) ? $data['logo_url'] : '';
+        $deviceOs = isset($data['device_os']) ? $data['device_os'] : 'ios';
 
         $message = new Message();
-        $message->setContent($data['title']);
+        $message->setContent($content);
         $content = $message->getContent();
-        $message->setTitle($data['content']);
+        $message->setTitle($title);
         $title = $message->getTitle();
-
 
         $client = $this->obj;
         $push = $client->push();
 
-        $cid = $deviceId;
         $platform = array('ios', 'android');
         $alert = $content;
         $ios_notification = array(
@@ -86,71 +94,28 @@ class JiGuangService extends PushBase
         );
         $options = array(
             'sendno' => 100,
-            'time_to_live' => 100,
-            'override_msg_id' => 100,
-            'big_push_duration' => 100
+//            'time_to_live' => 100,
+//            'override_msg_id' => 100,
+//            'big_push_duration' => 100
         );
 
+        $request = $push->setPlatform($platform)
+            ->addRegistrationId($deviceId)
+            ->iosNotification($alert, $ios_notification)
+            ->androidNotification($alert, $android_notification)
+            ->message($content, $message)
+            ->options($options);
 
-        if (is_array($cid)) {
-            foreach ($cid as $item) {
-                try {
-                    $response = $push->setCid($item)
-                        ->setPlatform($platform)
-                        ->iosNotification($alert, $ios_notification)
-                        ->androidNotification($alert, $android_notification)
-                        ->message($content, $message)
-                        ->options($options)
-                        ->send();
-
-                } catch (\JPush\Exceptions\APIConnectionException $e) {
-                    $response = $push->setCid($item)
-                        ->setPlatform($platform)
-                        ->iosNotification($alert, $ios_notification)
-                        ->androidNotification($alert, $android_notification)
-                        ->message($content, $message)
-                        ->options($options)
-                        ->send();
-                } catch (\JPush\Exceptions\APIRequestException $e) {
-                    $response = $push->setCid($item)
-                        ->setPlatform($platform)
-                        ->iosNotification($alert, $ios_notification)
-                        ->androidNotification($alert, $android_notification)
-                        ->message($content, $message)
-                        ->options($options)
-                        ->send();
-                }
-            }
-        } else {
-            try {
-                $response = $push->setCid($cid)
-                    ->setPlatform($platform)
-                    ->iosNotification($alert, $ios_notification)
-                    ->androidNotification($alert, $android_notification)
-                    ->message($content, $message)
-                    ->options($options)
-                    ->send();
-                return $response;
-
-            } catch (\JPush\Exceptions\APIConnectionException $e) {
-                $response = $push->setCid($cid)
-                    ->setPlatform($platform)
-                    ->iosNotification($alert, $ios_notification)
-                    ->androidNotification($alert, $android_notification)
-                    ->message($content, $message)
-                    ->options($options)
-                    ->send();
-                return $response;
-            } catch (\JPush\Exceptions\APIRequestException $e) {
-                $response = $push->setCid($cid)
-                    ->setPlatform($platform)
-                    ->iosNotification($alert, $ios_notification)
-                    ->androidNotification($alert, $android_notification)
-                    ->message($content, $message)
-                    ->options($options)
-                    ->send();
-                return $response;
-            }
+        try {
+            $response  =  $request ->send();
+            return $response;
+        } catch (\JPush\Exceptions\APIConnectionException $e) {
+            $response  =  $request ->send();
+            return $response;
+        } catch (\JPush\Exceptions\APIRequestException $e) {
+            $response  =  $request ->send();
+            return $response;
         }
+
     }
 }
