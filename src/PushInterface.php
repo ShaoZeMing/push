@@ -10,6 +10,8 @@ interface PushInterface
 {
     public function push($deviceId, array $data);
 
+    public function pushToApp(array $data);
+
 
 }
  

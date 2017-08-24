@@ -5,6 +5,9 @@ namespace Shaozeming\Push;
 
 //use Illuminate\Support\Facades\Log;
 
+use Shaozeming\Push\Exceptions\GeTuiException;
+use Shaozeming\Push\Exceptions\PushException;
+
 require_once dirname(__FILE__) . '/Drivers/getui/IGt.Push.php';
 
 class GeTuiService extends PushBase
@@ -213,6 +216,17 @@ class GeTuiService extends PushBase
     }
 
 
+
+
+    /**
+     * 推送单个或多个用户
+     * @param array|string $deviceId
+     * @param array $data
+     * @param string $function 数据转换编码函数
+     *
+     * @return Message
+     * @throws \Exception
+     */
     public function push($deviceId, array $data, $function = 'json_encode')
     {
         if (empty($deviceId)) {
@@ -222,17 +236,15 @@ class GeTuiService extends PushBase
         if(!isset($data['content']) || !isset($data['title'])){
             throw new \Exception('content and title not empty');
         }
-        $title = $data['title'];
-        $content =  $data['content'];
         $type = isset($data['type']) ? $data['type'] : 0;
         $shortUrl = isset($data['url']) ? $data['url'] : '';
         $logoUrl = isset($data['logo_url']) ? $data['logo_url'] : '';
         $deviceOs = isset($data['device_os']) ? $data['device_os'] : 'ios';
 
         $message = new Message();
-        $message->setContent($content);
+        $message->setContent($data['content']);
         $content = $message->getContent();
-        $message->setTitle($title);
+        $message->setTitle($data['title']);
         $title = $message->getTitle();
         $transContent = $function($data);
 
@@ -245,6 +257,35 @@ class GeTuiService extends PushBase
         }
         return $result;
 
+    }
+
+
+
+    /**
+     * 发送给这个APP所有用户
+     *
+     * @param array $data
+     * @param string $function
+     *
+     * @return Message
+     * @throws \Exception
+     */
+    public function pushToApp(array $data,$function = 'json_encode'){
+
+        if(!isset($data['content']) || !isset($data['title'])){
+            throw new \Exception('content and title not empty');
+        }
+
+        $message = new Message();
+        $message->setContent($data['content']);
+        $content = $message->getContent();
+        $message->setTitle($data['title']);
+        $title = $message->getTitle();
+
+        $transContent = $function($data);
+
+        $result = $this->pushMsgToApp($transContent,$content,$title);
+        return $result;
     }
 
 

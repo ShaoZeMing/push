@@ -2,7 +2,7 @@
 /**
  *  TestSms.php
  *
- * @author gengzhiguo@xiongmaojinfu.com
+ * @author szm19920426@gmail.com
  * $Id: TestSms.php 2017-08-17 上午10:08 $
  */
 

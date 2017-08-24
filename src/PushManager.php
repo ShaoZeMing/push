@@ -4,7 +4,7 @@ namespace Shaozeming\Push;
 /**
  *  PushBase.php
  *
- * @author gengzhiguo@xiongmaojinfu.com
+ * @author szm19920426@gmail.com
  * $Id: OrderService.php 2017-03-21 下午4:57 $
  */
 class PushManager
@@ -19,7 +19,7 @@ class PushManager
     /**
      * 获取对应的服务模型对象
      *
-     * @author shaozeming@xiongmaojinfu.com
+     * @author szm19920426@gmail.com
      *
      * @param    string    $driver
      * @param    array    $config
@@ -51,7 +51,7 @@ class PushManager
     /**
      * 获取GeTui服务模型对象
      *
-     * @author shaozeming@xiongmaojinfu.com
+     * @author szm19920426@gmail.com
      *
      * @param    array    $config
      *
@@ -67,7 +67,7 @@ class PushManager
     /**
      * 获取极光推送服务模型对象
      *
-     * @author shaozeming@xiongmaojinfu.com
+     * @author szm19920426@gmail.com
      *
      * @param    array    $config
      *

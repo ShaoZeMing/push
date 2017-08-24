@@ -4,7 +4,7 @@ namespace Shaozeming\Push;
 /**
  *  Message.php
  *
- * @author gengzhiguo@xiongmaojinfu.com
+ * @author szm19920426@gmail.com
  * $Id: message.php 2017-08-16 下午7:38 $
  */
 class Message
