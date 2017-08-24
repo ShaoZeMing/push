@@ -48,19 +48,7 @@ class TestPush extends TestCase
                 'content' => $content,
             ];
 
-            $config =  [
-                'gt_appid' => '87klYMPe1o515SCcbx7Co5',
-                'gt_appkey' => 'dd9XpsgHff89DJgUgvW6L8',
-                'gt_appsecret' => 'aKMLyeXLCc8hFpjcuf8gW8',
-                'gt_mastersecret' => 'zx85PndZVf8Q1M1Iv9dEy3',
-                'gt_domainurl' => 'http://sdk.open.api.igexin.com/apiex.htm',
-            ];
-
-            $push =(new PushManager())->driver('ge_tui',$config);
-
-//            $push = app('PushManager')->driver('ge_tui',$config);
-            $getuiResponse = $push->push($deviceId, $data);
-
+            $getuiResponse = $this->instance->push($deviceId, $data);
             $res = json_encode($getuiResponse);
             echo '<br>';
             echo $res;

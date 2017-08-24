@@ -11,9 +11,9 @@ class PushException extends \Exception
 {
     protected static $errorMsgs = [
         '101' => '缺少用户device_Id',
-        '102' => 'title or content is null',
-        '103' => 't',
-        '104' => '系统忙（因平台侧原因，暂时无法处理提交的短信）',
+        '102' => 'title 不存在',
+        '103' => 'content 不存在',
+        '104' => '系统繁忙',
         '105' => '敏感消息（消息内容包含敏感词）',
         '106' => '消息长度错误（>536或<=0）',
         '107' => '包含错误的手机号码',

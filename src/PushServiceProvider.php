@@ -27,24 +27,10 @@ class PushServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
-
-        $this->app->singleton('GeTuiService', function ($app){
-            return new GeTuiService();
-        });
-
-        $this->app->singleton('PushMsgService', function ($app){
-            return new PushMsgService();
-        });
 
         $this->app->singleton('PushManager', function ($app){
             return new PushManager();
         });
 
-        $this->app->singleton('MerGeTuiService', function ($app){
-            // var_export($app['config']['getui']['tag']);
-            $obj = new GeTuiService();
-            return $obj->getMerInstance();
-        });
     }
 }
