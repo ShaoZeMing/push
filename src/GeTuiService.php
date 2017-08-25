@@ -5,8 +5,6 @@ namespace Shaozeming\Push;
 
 //use Illuminate\Support\Facades\Log;
 
-use Shaozeming\Push\Exceptions\GeTuiException;
-use Shaozeming\Push\Exceptions\PushException;
 
 require_once dirname(__FILE__) . '/Drivers/getui/IGt.Push.php';
 
@@ -14,7 +12,21 @@ class GeTuiService extends PushBase
 {
     // use AuthorizesRequests, ValidatesRequests;
 
+    const HOST = 'http://sdk.open.api.igexin.com/apiex.htm';  //http的域名
+    const ALL = 0;
+    const NOTICE = 1;  //http的域名
+    const PENETRATE = 2;  //http的域名
+    const H5 = 3;  //http的域名
     public $obj;
+
+    public $push_type = self::ALL;
+    public static $push_type_txt = [
+        self::NOTICE => '通知',
+        self::PENETRATE => '透传',
+        self::ALL => '通知+透传',
+        self::H5 => 'H5',
+    ];
+
 
     public function __construct($config = [])
     {
@@ -25,7 +37,7 @@ class GeTuiService extends PushBase
             $tag = config('push.tag');
             $params = config('push.' . $driver . '.getui.' . $tag);
         }
-        $this->obj = new \IGeTui($params['gt_domainurl'], $params['gt_appkey'], $params['gt_mastersecret'], $ssl = NULL);
+        $this->obj = new \IGeTui($params['gt_domainurl'], $params['gt_appkey'], $params['gt_mastersecret']);
         $this->gt_appid = $params['gt_appid'];
         $this->gt_appkey = $params['gt_appkey'];
         $this->gt_appsecret = $params['gt_appsecret'];
@@ -100,7 +112,7 @@ class GeTuiService extends PushBase
             $rep = $this->obj->pushMessageToList($contentId, $targetList);
         } catch (\RequestException $e) {
             $requestId = $e->getRequestId();
-            $rep = $this->obj->pushMessageToList($contentId, $targetList, $requestId);
+            $rep = $this->obj->pushMessageToList($contentId, $targetList);
         }
         return $rep;
     }
@@ -216,8 +228,6 @@ class GeTuiService extends PushBase
     }
 
 
-
-
     /**
      * 推送单个或多个用户
      * @param array|string $deviceId
@@ -233,7 +243,7 @@ class GeTuiService extends PushBase
             throw new \Exception('device_id not empty');
         }
 
-        if(!isset($data['content']) || !isset($data['title'])){
+        if (!isset($data['content']) || !isset($data['title'])) {
             throw new \Exception('content and title not empty');
         }
         $type = isset($data['type']) ? $data['type'] : 0;
@@ -252,13 +262,12 @@ class GeTuiService extends PushBase
             $result = $this->pushMessageToList($deviceId, $transContent, $content, $title, $shortUrl);
 
         } else {
-            $result = $this->pushToSignal($deviceId, $transContent, $content, $title, $shortUrl, $deviceOs, $logoUrl);
+            $result = $this->pushMessageToSingle($deviceId, $transContent, $content, $title, $shortUrl);
 
         }
         return $result;
 
     }
-
 
 
     /**
@@ -270,9 +279,10 @@ class GeTuiService extends PushBase
      * @return Message
      * @throws \Exception
      */
-    public function pushToApp(array $data,$function = 'json_encode'){
+    public function pushToApp(array $data, $function = 'json_encode')
+    {
 
-        if(!isset($data['content']) || !isset($data['title'])){
+        if (!isset($data['content']) || !isset($data['title'])) {
             throw new \Exception('content and title not empty');
         }
 
@@ -284,8 +294,276 @@ class GeTuiService extends PushBase
 
         $transContent = $function($data);
 
-        $result = $this->pushMsgToApp($transContent,$content,$title);
+        $result = $this->pushMsgToApp($transContent, $content, $title);
         return $result;
+    }
+
+
+
+
+    //
+//服务端推送接口，支持三个接口推送
+//1.PushMessageToSingle接口：支持对单个用户进行推送
+//2.PushMessageToList接口：支持对多个用户进行推送，建议为50个用户
+//3.pushMessageToApp接口：对单个应用下的所有用户进行推送，可根据省份，标签，机型过滤推送
+//
+
+//单推接口案例
+    function pushMessageToSingle($clientId, $transContent, $content, $title, $shortUrl = '')
+    {
+        //消息模版：
+        $template = $this->getTemplate($content, $title, $transContent,$shortUrl);
+        //个推信息体
+        $message = new \IGtSingleMessage();
+        $message->set_isOffline(true);//是否离线
+        $message->set_offlineExpireTime(3600 * 12 * 1000);//离线时间
+        $message->set_data($template);//设置推送消息类型
+//	$message->set_PushNetWorkType(0);//设置是否根据WIFI推送消息，1为wifi推送，0为不限制推送
+        //接收方
+        $target = new \IGtTarget();
+        $target->set_appId($this->gt_appid);
+        $target->set_clientId($clientId);
+//    $target->set_alias(Alias);
+
+        try {
+            $rep =  $this->obj->pushMessageToSingle($message, $target);
+            return $rep;
+        } catch (\RequestException $e) {
+            $requstId = $e->getRequestId();
+            $rep =  $this->obj->pushMessageToSingle($message, $target, $requstId);
+            return $rep;
+        }
+
+    }
+
+//多推接口案例
+    function pushToList($clientIds, $content, $title, $transContent, $shortUrl = '')
+    {
+        putenv("gexin_pushList_needDetails=true");
+        putenv("gexin_pushList_needAsync=true");
+        //消息模版：
+        $template = $this->getTemplate($content, $title, $transContent,$shortUrl);
+        //个推信息体
+        $message = new \IGtListMessage();
+        $message->set_isOffline(true);//是否离线
+        $message->set_offlineExpireTime(3600 * 12 * 1000);//离线时间
+        $message->set_data($template);//设置推送消息类型
+//    $message->set_PushNetWorkType(1);	//设置是否根据WIFI推送消息，1为wifi推送，0为不限制推送
+//    $contentId = $igt->getContentId($message);
+        $contentId =  $this->obj->getContentId($message, "toList任务别名功能");    //根据TaskId设置组名，支持下划线，中文，英文，数字
+
+        //接收方1
+        $targetList = [];
+        foreach ($clientIds as $key => $clientId) {
+            $target = new \IGtTarget();
+            $target->set_appId($this->gt_appid);
+            $target->set_clientId($clientId);
+            $targetList[] = $target;
+        }
+
+//    $target1->set_alias(Alias);
+        $rep =  $this->obj->pushMessageToList($contentId, $targetList);
+        return $rep;
+
+    }
+
+
+//群推接口案例
+    function pushMessageToApp($transContent, $content, $title, $shortUrl = '')
+    {
+        $template = $this->getTemplate($content, $title, $transContent,$shortUrl);
+        //个推信息体
+        //基于应用消息体
+        $message = new \IGtAppMessage();
+        $message->set_isOffline(true);
+        $message->set_offlineExpireTime(10 * 60 * 1000);//离线时间单位为毫秒，例，两个小时离线为3600*1000*2
+        $message->set_data($template);
+
+        $appIdList = array($this->gt_appid);
+        $phoneTypeList = array('ANDROID');
+        $provinceList = array('浙江');
+        $tagList = array('haha');
+        //用户属性
+        //$age = array("0000", "0010");
+
+        //$cdt = new AppConditions();
+        // $cdt->addCondition(AppConditions::PHONE_TYPE, $phoneTypeList);
+        // $cdt->addCondition(AppConditions::REGION, $provinceList);
+        //$cdt->addCondition(AppConditions::TAG, $tagList);
+        //$cdt->addCondition("age", $age);
+
+        $message->set_appIdList($appIdList);
+        //$message->set_conditions($cdt->getCondition());
+
+        $rep =  $this->obj->pushMessageToApp($message, "任务组名");
+
+        return $rep;
+
+    }
+
+
+    protected function getTemplate($content, $title, $transContent, $shortUrl = '')
+    {
+        $type = $this->push_type;
+        switch ($type) {
+            case self::ALL:
+                return $this->IGtNotificationTemplateDemo($content, $title, $transContent);
+            case self::NOTICE:
+                return $this->IGtNotyPopLoadTemplateDemo($content, $title, $transContent);
+            case self::PENETRATE:
+                return $this->IGtTransmissionTemplateDemo($content, $title, $transContent);
+            case self::H5:
+                return $this->IGtLinkTemplateDemo($content, $title, $shortUrl);
+        }
+    }
+
+
+    /**
+     * @param mixed $mobile
+     *
+     * @return Message
+     */
+    public function setPushType($pushType)
+    {
+        $this->push_type = $pushType;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPushTypeTxt($pushType)
+    {
+        $result = isset(self::$push_type_txt[$pushType]) ? self::$push_type_txt[$pushType] : '没有这个类型，只支持 0|1|2|3';
+        return $result;
+    }
+
+
+
+
+
+//所有推送接口均支持四个消息模板，依次为通知弹框下载模板，通知链接模板，通知透传模板，透传模板
+//注：IOS离线推送需通过APN进行转发，需填写pushInfo字段，目前仅不支持通知弹框下载功能
+
+
+//推送通知
+    function IGtNotyPopLoadTemplateDemo($content, $title, $transContent)
+    {
+        $template = new \IGtNotyPopLoadTemplate();
+
+        $template->set_appId($this->gt_appid);//应用appid
+        $template->set_appkey($this->gt_appkey);//应用appkey
+        //通知栏
+        $template->set_notyTitle($title);//通知栏标题
+        $template->set_notyContent($content);//通知栏内容
+        $template->set_notyIcon("");//通知栏logo
+        $template->set_isBelled(true);//是否响铃
+        $template->set_isVibrationed(true);//是否震动
+        $template->set_isCleared(true);//通知栏是否可清除
+        //弹框
+        $template->set_popTitle($title);//弹框标题
+        $template->set_popContent($transContent);//弹框内容
+        $template->set_popImage("");//弹框图片
+        $template->set_popButton1("下载");//左键
+        $template->set_popButton2("取消");//右键
+        //下载
+        $template->set_loadIcon("");//弹框图片
+        $template->set_loadTitle("地震速报下载");
+        $template->set_loadUrl("http://dizhensubao.igexin.com/dl/com.ceic.apk");
+        $template->set_isAutoInstall(false);
+        $template->set_isActived(true);
+        //$template->set_duration(BEGINTIME,ENDTIME); //设置ANDROID客户端在此时间区间内展示消息
+
+        return $template;
+    }
+
+    //推送通知链接模板
+    function IGtLinkTemplateDemo($content, $title, $url)
+    {
+        $template = new \IGtLinkTemplate();
+        $template->set_appId($this->gt_appid);//应用appid
+        $template->set_appkey($this->gt_appkey);//应用appkey
+        $template->set_title($title);//通知栏标题
+        $template->set_text($content);//通知栏内容
+        $template->set_logo("");//通知栏logo
+        $template->set_isRing(true);//是否响铃
+        $template->set_isVibrate(true);//是否震动
+        $template->set_isClearable(true);//通知栏是否可清除
+        $template->set_url($url);//打开连接地址
+        //$template->set_duration(BEGINTIME,ENDTIME); //设置ANDROID客户端在此时间区间内展示消息
+        return $template;
+    }
+
+
+    //透传模板
+    function IGtTransmissionTemplateDemo($content, $title, $transContent)
+    {
+        $template = new \IGtTransmissionTemplate();
+        $template->set_appId($this->gt_appid);//应用appid
+        $template->set_appkey($this->gt_appkey);//应用appkey
+        $template->set_transmissionType(1);//透传消息类型
+        $template->set_transmissionContent($transContent);//透传内容
+        //$template->set_duration(BEGINTIME,ENDTIME); //设置ANDROID客户端在此时间区间内展示消息
+        //APN简单推送
+//        $template = new IGtAPNTemplate();
+//        $apn = new IGtAPNPayload();
+//        $alertmsg=new SimpleAlertMsg();
+//        $alertmsg->alertMsg="";
+//        $apn->alertMsg=$alertmsg;
+////        $apn->badge=2;
+////        $apn->sound="";
+//        $apn->add_customMsg("payload","payload");
+//        $apn->contentAvailable=1;
+//        $apn->category="ACTIONABLE";
+//        $template->set_apnInfo($apn);
+//        $message = new IGtSingleMessage();
+
+        //APN高级推送
+        $apn = new \IGtAPNPayload();
+        $alertmsg = new \DictionaryAlertMsg();
+        $alertmsg->body = $content;
+        $alertmsg->actionLocKey = "ActionLockey";
+        $alertmsg->locKey = "LocKey";
+        $alertmsg->locArgs = array("locargs");
+        $alertmsg->launchImage = "launchimage";
+//        IOS8.2 支持
+        $alertmsg->title = $title;
+        $alertmsg->titleLocKey = "TitleLocKey";
+        $alertmsg->titleLocArgs = array("TitleLocArg");
+
+        $apn->alertMsg = $alertmsg;
+        $apn->badge = 7;
+        $apn->sound = "";
+        $apn->add_customMsg("payload", "payload");
+        $apn->contentAvailable = 1;
+        $apn->category = "ACTIONABLE";
+        $template->set_apnInfo($apn);
+
+        //PushApn老方式传参
+//    $template = new IGtAPNTemplate();
+//          $template->set_pushInfo("", 10, "", "com.gexin.ios.silence", "", "", "", "");
+
+        return $template;
+    }
+
+
+    //通知+透传模板
+    function IGtNotificationTemplateDemo($content, $title, $transContent)
+    {
+        $template = new \IGtNotificationTemplate();
+        $template->set_appId($this->gt_appid);//应用appid
+        $template->set_appkey($this->gt_appkey);//应用appkey
+        $template->set_transmissionType(1);//透传消息类型
+        $template->set_transmissionContent($transContent);//透传内容
+        $template->set_title($title);//通知栏标题
+        $template->set_text($content);//通知栏内容
+        $template->set_logo("http://wwww.igetui.com/logo.png");//通知栏logo
+        $template->set_isRing(true);//是否响铃
+        $template->set_isVibrate(true);//是否震动
+        $template->set_isClearable(true);//通知栏是否可清除
+        //$template->set_duration(BEGINTIME,ENDTIME); //设置ANDROID客户端在此时间区间内展示消息
+        return $template;
     }
 
 

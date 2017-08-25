@@ -23,9 +23,7 @@ class JiGuangService extends PushBase
             $params = config('push.' . $driver . '.jigaung.' . $tag);
         }
         $this->obj = new JPush($params['gt_appkey'], $params['gt_mastersecret']);
-        $this->gt_appid = $params['gt_appid'];
         $this->gt_appkey = $params['gt_appkey'];
-        $this->gt_appsecret = $params['gt_appsecret'];
         $this->gt_mastersecret = $params['gt_mastersecret'];
 
     }
@@ -40,9 +38,7 @@ class JiGuangService extends PushBase
             $params = config('push.' . $driver . '.jigaung.' . $tag);
         }
         $this->obj = new JPush($params['gt_appkey'], $params['gt_mastersecret']);
-        $this->gt_appid = $params['gt_appid'];
         $this->gt_appkey = $params['gt_appkey'];
-        $this->gt_appsecret = $params['gt_appsecret'];
         $this->gt_mastersecret = $params['gt_mastersecret'];
         return $this;
     }

@@ -25,7 +25,11 @@ class TestPush extends TestCase
             'gt_mastersecret' => 'zx85PndZVf8Q1M1Iv9dEy3',
             'gt_domainurl' => 'http://sdk.open.api.igexin.com/apiex.htm',
         ];
-        $this->instance = (new PushManager())->driver('ge_tui',$config);
+        $config =  [
+            'gt_appkey' => 'dd9XpsgHff89DJgUgvW6L8',
+            'gt_mastersecret' => 'zx85PndZVf8Q1M1Iv9dEy3',
+        ];
+        $this->instance = (new PushManager())->driver('ji_guang',$config);
     }
 
     public function testPushManager()

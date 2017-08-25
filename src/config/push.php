@@ -1,6 +1,9 @@
 <?php
 return [
     'driver' => env('SYSTEM_OS') ? env('SYSTEM_OS') : 'develop',
+    'push_service' => 'ge_tui',   //使用个推服务
+//    'push_service' => 'ji_guang', //使用极光服务
+
     'tag' => 'demo',
     'develop' => [
         'getui' => [

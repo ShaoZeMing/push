@@ -25,9 +25,12 @@ class PushManager
      * @param    array    $config
      *
      */
-    public function driver($driver,$config=[])
+    public function driver($driver='',$config=[])
     {
 
+        if(empty($driver)){
+            $driver = config('push.push_service');
+        }
         $method = 'create' . $this->studly($driver) . 'Driver';
 
         if (method_exists($this, $method)) {
