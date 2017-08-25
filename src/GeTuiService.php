@@ -567,4 +567,59 @@ class GeTuiService extends PushBase
     }
 
 
+
+    function getPersonaTagsDemo() {
+        $ret = $this->obj->getPersonaTags($this->gt_appid);
+        var_dump($ret);
+    }
+
+    function getUserCountByTagsDemo() {
+        $tagList = array("金在中","龙卷风");
+        $ret = $this->obj->getUserCountByTags($this->gt_appid, $tagList);
+        var_dump($ret);
+    }
+
+    function getPushMessageResultDemo(){
+
+        $igt = $this->obj;
+
+        $ret = $igt->getPushResult("OSA-0522_QZ7nHpBlxF6vrxGaLb1FA3");
+        var_dump($ret);
+
+        $ret = $igt->queryAppUserDataByDate($this->gt_appid,"20140807");
+        var_dump($ret);
+
+        $ret = $igt->queryAppPushDataByDate($this->gt_appid,"20140807");
+        var_dump($ret);
+    }
+
+
+//用户状态查询
+    function getUserStatus($cid) {
+        $rep = $this->obj->getClientIdStatus($this->gt_appid,$cid);
+        var_dump($rep);
+        echo ("<br><br>");
+    }
+
+//推送任务停止
+    function stoptask(){
+        $this->obj->stop("OSA-1127_QYZyBzTPWz5ioFAixENzs3");
+    }
+
+//通过服务端设置ClientId的标签
+    function setTag($cid){
+        $tagList = array('','中文','English');
+        $rep = $this->obj->setClientTag($this->gt_appid,$cid,$tagList);
+        var_dump($rep);
+        echo ("<br><br>");
+    }
+
+    function getUserTags($cid) {
+        $rep = $this->obj->getUserTags($this->gt_appid,$cid);
+        //$rep.connect();
+        var_dump($rep);
+        echo ("<br><br>");
+    }
+
+
 }
