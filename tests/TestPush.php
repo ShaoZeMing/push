@@ -42,7 +42,8 @@ class TestPush extends TestCase
         echo "发送push 中";
         try {
             Log::info('testPush', [__METHOD__]);
-            $deviceId = 'b2e5b64931f06f617e363b74c8057cf6';
+//            $deviceId = 'b2e5b64931f06f617e363b74c8057cf6';
+            $deviceId = '160a3797c8310b57df9';
             $title = 'getui test';
             $content = '123123,test 您负责的的工单已经追加元';
 
