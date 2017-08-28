@@ -22,8 +22,7 @@ class GeTuiService extends PushBase
             $params = $config;
         } else {
             $driver = config('push.driver');
-            $tag = config('push.tag');
-            $params = config('push.' . $driver . '.getui.' . $tag);
+            $params = config('push.' . $driver . '.getui' );
         }
         $this->obj = new \IGeTui($params['gt_domainurl'], $params['gt_appkey'], $params['gt_mastersecret']);
         $this->gt_appid = $params['gt_appid'];
@@ -38,8 +37,7 @@ class GeTuiService extends PushBase
             $params = $config;
         } else {
             $driver = config('push.driver');
-            $tag = config('push.tag');
-            $params = config('push.' . $driver . '.getui.' . $tag);
+            $params = config('push.' . $driver . '.getui');
         }
         $this->obj = new \IGeTui($params['gt_domainurl'], $params['gt_appkey'], $params['gt_mastersecret'], $ssl = NULL);
         $this->gt_appid = $params['gt_appid'];

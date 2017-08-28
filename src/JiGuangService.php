@@ -19,8 +19,7 @@ class JiGuangService extends PushBase
             $params = $config;
         } else {
             $driver = config('push.driver');
-            $tag = config('push.tag');
-            $params = config('push.' . $driver . '.jigaung.' . $tag);
+            $params = config('push.' . $driver . '.jigaung');
         }
         $this->obj = new JPush($params['gt_appkey'], $params['gt_mastersecret']);
         $this->gt_appkey = $params['gt_appkey'];
@@ -34,8 +33,7 @@ class JiGuangService extends PushBase
             $params = $config;
         } else {
             $driver = config('push.driver');
-            $tag = config('push.tag');
-            $params = config('push.' . $driver . '.jigaung.' . $tag);
+            $params = config('push.' . $driver . '.jigaung');
         }
         $this->obj = new JPush($params['gt_appkey'], $params['gt_mastersecret']);
         $this->gt_appkey = $params['gt_appkey'];
