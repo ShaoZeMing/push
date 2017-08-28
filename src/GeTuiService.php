@@ -177,7 +177,7 @@ class GeTuiService extends PushBase
         $message = new \IGtSingleMessage();
         $message->set_isOffline(true);//是否离线
 
-        if ($this->push_type == self::PENETRATE) {
+        if (!$isNotice) {
             $message->set_offlineExpireTime(100 * 1000);//离线时间
         } else {
             $message->set_offlineExpireTime(3600 * 12 * 1000);//离线时间
@@ -211,7 +211,7 @@ class GeTuiService extends PushBase
         //个推信息体
         $message = new \IGtListMessage();
         $message->set_isOffline(true);//是否离线
-        if ($this->push_type == self::PENETRATE) {
+        if (!$isNotice) {
             $message->set_offlineExpireTime(100 * 1000);//离线时间
         } else {
             $message->set_offlineExpireTime(3600 * 12 * 1000);//离线时间
