@@ -26,8 +26,8 @@ class TestPush extends TestCase
             'gt_domainurl' => 'http://sdk.open.api.igexin.com/apiex.htm',
         ];
         $config =  [
-            'gt_appkey' => 'dd9XpsgHff89DJgUgvW6L8',
-            'gt_mastersecret' => 'zx85PndZVf8Q1M1Iv9dEy3',
+            'gt_appkey' => 'de8fbc44a4d7c90630d167ef',
+            'gt_mastersecret' => '23f8e0bc41eca2a11f831939',
         ];
         $this->instance = (new PushManager())->driver('ji_guang',$config);
     }
@@ -41,7 +41,6 @@ class TestPush extends TestCase
     {
         echo "发送push 中";
         try {
-            Log::info('testPush', [__METHOD__]);
 //            $deviceId = 'b2e5b64931f06f617e363b74c8057cf6';
             $deviceId = '160a3797c8310b57df9';
             $title = 'getui test';
@@ -57,7 +56,6 @@ class TestPush extends TestCase
             $res = json_encode($getuiResponse);
             echo '<br>';
             echo $res;
-            Log::info($res, [__METHOD__]);
         } catch (\Exception $e) {
             echo "Error : 错误" . $e->getMessage();
         }

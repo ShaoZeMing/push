@@ -16,8 +16,6 @@ class GeTuiService extends PushBase
     protected $obj;
 
 
-
-
     public function __construct($config = [])
     {
         if (count($config)) {
@@ -104,7 +102,7 @@ class GeTuiService extends PushBase
      * @return Message
      * @throws \Exception
      */
-    public function push($deviceId, array $data,$function = 'json_encode')
+    public function push($deviceId, array $data, $isNotice = true, $function = 'json_encode')
     {
         if (empty($deviceId)) {
             throw new \Exception('device_id not empty');
@@ -113,11 +111,7 @@ class GeTuiService extends PushBase
         if (!isset($data['content']) || !isset($data['title'])) {
             throw new \Exception('content and title not empty');
         }
-        $type = isset($data['type']) ? $data['type'] : 0;
         $shortUrl = isset($data['url']) ? $data['url'] : '';
-        $logoUrl = isset($data['logo_url']) ? $data['logo_url'] : '';
-        $deviceOs = isset($data['device_os']) ? $data['device_os'] : 'ios';
-
         $message = new Message();
         $message->setContent($data['content']);
         $content = $message->getContent();
@@ -126,10 +120,10 @@ class GeTuiService extends PushBase
         $transContent = $function($data);
 
         if (is_array($deviceId)) {
-            $result = $this->pushMessageToList($deviceId, $transContent, $content, $title, $shortUrl);
+            $result = $this->pushMessageToList($deviceId, $transContent, $content, $title,$isNotice, $shortUrl);
 
         } else {
-            $result = $this->pushMessageToSingle($deviceId, $transContent, $content, $title, $shortUrl);
+            $result = $this->pushMessageToSingle($deviceId, $transContent, $content, $title, $isNotice, $shortUrl);
 
         }
         return $result;
@@ -146,7 +140,7 @@ class GeTuiService extends PushBase
      * @return Message
      * @throws \Exception
      */
-    public function pushToApp(array $data, $function = 'json_encode')
+    public function pushToApp(array $data,$isNotice=true, $function = 'json_encode')
     {
 
         if (!isset($data['content']) || !isset($data['title'])) {
@@ -160,7 +154,7 @@ class GeTuiService extends PushBase
         $title = $message->getTitle();
 
         $transContent = $function($data);
-        $result = $this->pushMessageToApp($transContent, $content, $title);
+        $result = $this->pushMessageToApp($transContent, $content, $title ,$isNotice);
         return $result;
     }
 
@@ -175,14 +169,19 @@ class GeTuiService extends PushBase
 //
 
 //单推接口案例
-    function pushMessageToSingle($clientId, $transContent, $content, $title, $shortUrl = '')
+    function pushMessageToSingle($clientId, $transContent, $content, $title, $isNotice = true, $shortUrl = '')
     {
         //消息模版：
-        $template = $this->getTemplate($content, $title, $transContent,$shortUrl);
+        $template = $this->getTemplate($content, $title, $transContent,$isNotice, $shortUrl);
         //个推信息体
         $message = new \IGtSingleMessage();
         $message->set_isOffline(true);//是否离线
-        $message->set_offlineExpireTime(3600 * 12 * 1000);//离线时间
+
+        if ($this->push_type == self::PENETRATE) {
+            $message->set_offlineExpireTime(100 * 1000);//离线时间
+        } else {
+            $message->set_offlineExpireTime(3600 * 12 * 1000);//离线时间
+        }
         $message->set_data($template);//设置推送消息类型
 //	$message->set_PushNetWorkType(0);//设置是否根据WIFI推送消息，1为wifi推送，0为不限制推送
         //接收方
@@ -192,31 +191,35 @@ class GeTuiService extends PushBase
 //    $target->set_alias(Alias);
 
         try {
-            $rep =  $this->obj->pushMessageToSingle($message, $target);
+            $rep = $this->obj->pushMessageToSingle($message, $target);
             return $rep;
         } catch (\RequestException $e) {
             $requstId = $e->getRequestId();
-            $rep =  $this->obj->pushMessageToSingle($message, $target, $requstId);
+            $rep = $this->obj->pushMessageToSingle($message, $target, $requstId);
             return $rep;
         }
 
     }
 
 //多推接口案例
-    function pushMessageToList($clientIds, $content, $title, $transContent, $shortUrl = '')
+    function pushMessageToList($clientIds, $content, $title, $transContent, $isNotice = true, $shortUrl = '')
     {
         putenv("gexin_pushList_needDetails=true");
         putenv("gexin_pushList_needAsync=true");
         //消息模版：
-        $template = $this->getTemplate($content, $title, $transContent,$shortUrl);
+        $template = $this->getTemplate($content, $title, $transContent,$isNotice, $shortUrl);
         //个推信息体
         $message = new \IGtListMessage();
         $message->set_isOffline(true);//是否离线
-        $message->set_offlineExpireTime(3600 * 12 * 1000);//离线时间
+        if ($this->push_type == self::PENETRATE) {
+            $message->set_offlineExpireTime(100 * 1000);//离线时间
+        } else {
+            $message->set_offlineExpireTime(3600 * 12 * 1000);//离线时间
+        }
         $message->set_data($template);//设置推送消息类型
 //    $message->set_PushNetWorkType(1);	//设置是否根据WIFI推送消息，1为wifi推送，0为不限制推送
 //    $contentId = $igt->getContentId($message);
-        $contentId =  $this->obj->getContentId($message, "toList任务别名功能");    //根据TaskId设置组名，支持下划线，中文，英文，数字
+        $contentId = $this->obj->getContentId($message, "toList任务别名功能");    //根据TaskId设置组名，支持下划线，中文，英文，数字
 
         //接收方1
         $targetList = [];
@@ -228,21 +231,26 @@ class GeTuiService extends PushBase
         }
 
 //    $target1->set_alias(Alias);
-        $rep =  $this->obj->pushMessageToList($contentId, $targetList);
+        $rep = $this->obj->pushMessageToList($contentId, $targetList);
         return $rep;
 
     }
 
 
 //群推接口案例
-    function pushMessageToApp($transContent, $content, $title, $shortUrl = '')
+    function pushMessageToApp($transContent, $content, $title, $isNotice = true, $shortUrl = '')
     {
-        $template = $this->getTemplate($content, $title, $transContent,$shortUrl);
+        $template = $this->getTemplate($content, $title, $transContent, $isNotice, $shortUrl);
         //个推信息体
         //基于应用消息体
         $message = new \IGtAppMessage();
         $message->set_isOffline(true);
-        $message->set_offlineExpireTime(10 * 60 * 1000);//离线时间单位为毫秒，例，两个小时离线为3600*1000*2
+
+        if ($this->push_type == self::PENETRATE) {
+            $message->set_offlineExpireTime(100 * 1000);//离线时间
+        } else {
+            $message->set_offlineExpireTime(3600 * 12 * 1000);//离线时间
+        }
         $message->set_data($template);
 
         $appIdList = array($this->gt_appid);
@@ -261,26 +269,30 @@ class GeTuiService extends PushBase
         $message->set_appIdList($appIdList);
         //$message->set_conditions($cdt->getCondition());
 
-        $rep =  $this->obj->pushMessageToApp($message, "任务组名");
+        $rep = $this->obj->pushMessageToApp($message, "任务组名");
 
         return $rep;
 
     }
 
 
-    protected function getTemplate($content, $title, $transContent, $shortUrl = '')
+    protected function getTemplate($content, $title, $transContent, $isNotice = true, $shortUrl = '')
     {
-        $type = $this->push_type;
-        switch ($type) {
-            case self::ALL:
-                return $this->IGtNotificationTemplateDemo($content, $title, $transContent);
-            case self::NOTICE:
-                return $this->IGtNotyPopLoadTemplateDemo($content, $title, $transContent);
-            case self::PENETRATE:
-                return $this->IGtTransmissionTemplateDemo($content, $title, $transContent);
-            case self::H5:
-                return $this->IGtLinkTemplateDemo($content, $title, $shortUrl);
+//        switch ($type) {
+//            case self::ALL:
+//                return $this->IGtNotificationTemplateDemo($content, $title, $transContent);
+//            case self::NOTICE:
+//                return $this->IGtNotyPopLoadTemplateDemo($content, $title, $transContent);
+//            case self::PENETRATE:
+//                return $this->IGtTransmissionTemplateDemo($content, $title, $transContent);
+//            case self::H5:
+//                return $this->IGtLinkTemplateDemo($content, $title, $shortUrl);
+//        }
+
+        if ($isNotice) {
+            return $this->IGtNotificationTemplateDemo($content, $title, $transContent);
         }
+        return $this->IGtTransmissionTemplateDemo($content, $title, $transContent);
     }
 
 
@@ -386,7 +398,7 @@ class GeTuiService extends PushBase
         $template->set_transmissionContent($transContent);//透传内容
         $template->set_title($title);//通知栏标题
         $template->set_text($content);//通知栏内容
-        $template->set_logo("http://wwww.igetui.com/logo.png");//通知栏logo
+        $template->set_logo("");//通知栏logo
         $template->set_isRing(true);//是否响铃
         $template->set_isVibrate(true);//是否震动
         $template->set_isClearable(true);//通知栏是否可清除
