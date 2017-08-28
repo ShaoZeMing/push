@@ -246,7 +246,7 @@ class GeTuiService extends PushBase
         $message = new \IGtAppMessage();
         $message->set_isOffline(true);
 
-        if ($this->push_type == self::PENETRATE) {
+        if (!$isNotice) {
             $message->set_offlineExpireTime(100 * 1000);//离线时间
         } else {
             $message->set_offlineExpireTime(3600 * 12 * 1000);//离线时间
