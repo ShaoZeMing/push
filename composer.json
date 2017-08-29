@@ -1,6 +1,6 @@
 {
   "name": "shaozeming/push",
-  "description": "将集成个推、激光推送等推送服务...开发ing.....",
+  "description": "一个集成推送服务包..,基于laravel5.4 框架开发",
   "license": "MIT",
   "authors": [
     {
