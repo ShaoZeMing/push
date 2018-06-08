@@ -7,7 +7,7 @@
  */
 
 namespace Shaozeming\Push\tests;
-require_once dirname(__FILE__) . '/../src/Drivers/getui/IGt.Push.php';
+require_once dirname(__FILE__) . '/../src/Drivers/getui_3.3/IGt.Push.php';
 
 use PHPUnit\Framework\TestCase;
 use Shaozeming\Push\GeTuiService;
@@ -56,8 +56,8 @@ class PushTest extends TestCase
                 'content' => $content,
             ];
 
-//            $getuiResponse = $this->instance->push($deviceId, $data);
-            $getuiResponse = $this->instance->pushToApp( $data);
+            $getuiResponse = $this->instance->push($deviceId, $data);
+//            $getuiResponse = $this->instance->pushToApp( $data);
             $res = json_encode($getuiResponse);
             echo '<br>';
             echo $res;

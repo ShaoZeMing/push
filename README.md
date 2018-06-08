@@ -1,5 +1,5 @@
 # push
-一个集成推送服务包..,基于laravel5.4 框架开发
+一个集成推送服务包..,基于laravel5.* 框架开发
 
 - 封装了个推服务
 - 封装了极光服务
@@ -15,7 +15,7 @@
     执行命令
 
     ```
-    composer require shaozeming/push "dev-master"
+    composer require shaozeming/push 
     ```
     直接运行composer自动安装代码。
 
