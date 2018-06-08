@@ -6,7 +6,7 @@ namespace Shaozeming\Push;
 //use Illuminate\Support\Facades\Log;
 
 
-require_once dirname(__FILE__) . '/Drivers/getui_3.3/IGt.Push.php';
+require_once dirname(__FILE__) . '/Drivers/getui/IGt.Push.php';
 
 class GeTuiService extends PushBase
 {

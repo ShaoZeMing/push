@@ -7,7 +7,7 @@
  */
 
 namespace Shaozeming\Push\tests;
-require_once dirname(__FILE__) . '/../src/Drivers/getui_3.3/IGt.Push.php';
+require_once dirname(__FILE__) . '/../src/Drivers/getui/IGt.Push.php';
 
 use PHPUnit\Framework\TestCase;
 use Shaozeming\Push\GeTuiService;
