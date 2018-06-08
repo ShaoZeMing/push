@@ -113,6 +113,7 @@ class GeTuiService extends PushBase
         $message = new Message();
         $message->setContent($data['content']);
         $content = $message->getContent();
+
         $message->setTitle($data['title']);
         $title = $message->getTitle();
         $transContent = $function($data);

@@ -6,13 +6,15 @@
  * $Id: TestSms.php 2017-08-17 上午10:08 $
  */
 
-namespace Shaozeming\Push\Tests;
+namespace Shaozeming\Push\tests;
+require_once dirname(__FILE__) . '/../src/Drivers/getui/IGt.Push.php';
 
 use PHPUnit\Framework\TestCase;
 use Shaozeming\Push\GeTuiService;
 use Shaozeming\Push\PushManager;
 
-class TestPush extends TestCase
+
+class PushTest extends TestCase
 {
     protected $instance;
 
@@ -25,11 +27,12 @@ class TestPush extends TestCase
             'gt_mastersecret' => 'zx85PndZVf8Q1M1Iv9dEy3',
             'gt_domainurl' => 'http://sdk.open.api.igexin.com/apiex.htm',
         ];
-        $config =  [
-            'gt_appkey' => 'de8fbc44a4d7c90630d167ef',
-            'gt_mastersecret' => '23f8e0bc41eca2a11f831939',
-        ];
-        $this->instance = (new PushManager())->driver('ji_guang',$config);
+
+//        $config =  [
+//            'gt_appkey' => 'de8fbc44a4d7c90630d167ef',
+//            'gt_mastersecret' => '23f8e0bc41eca2a11f831939',
+//        ];
+        $this->instance = (new PushManager())->driver('ge_tui',$config);
     }
 
     public function testPushManager()
@@ -43,8 +46,9 @@ class TestPush extends TestCase
         try {
 //            $deviceId = 'b2e5b64931f06f617e363b74c8057cf6';
             $deviceId = '160a3797c8310b57df9';
-            $title = 'getui test';
-            $content = '123123,test 您负责的的工单已经追加元';
+            $deviceId = '2e682657977c5c616481ae76088b033d';
+            $title = '我是第一条数据';
+            $content = '你好呀您负责的的工单已经追加元';
 
             $data = [
                 'type' => 9,
@@ -52,7 +56,8 @@ class TestPush extends TestCase
                 'content' => $content,
             ];
 
-            $getuiResponse = $this->instance->push($deviceId, $data);
+//            $getuiResponse = $this->instance->push($deviceId, $data);
+            $getuiResponse = $this->instance->pushToApp( $data);
             $res = json_encode($getuiResponse);
             echo '<br>';
             echo $res;
